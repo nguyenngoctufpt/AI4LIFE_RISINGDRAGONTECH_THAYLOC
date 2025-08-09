@@ -765,13 +765,13 @@
                 <div class="p-4 rounded-lg border" style="border-color: var(--border-color); background-color: var(--background-light);">
                     <div class="flex justify-between items-start">
                              <div>
-                                <h4 class="font-bold" style="color: var(--text-primary);">${job.title}</h4>
-                                <p class="text-sm text-gray-500">${job.companyName || 'Không rõ công ty'} - ${job.jobLocation || 'Không rõ địa điểm'}</p>
+                               <h4 class="font-bold" style="color: var(--text-primary);">${job.title}</h4>
+                               <p class="text-sm text-gray-500">${job.companyName || 'Không rõ công ty'} - ${job.jobLocation || 'Không rõ địa điểm'}</p>
                              </div>
                              <div class="flex flex-col sm:flex-row gap-2">
-                                <button class="text-xs font-semibold text-blue-500 hover:underline" onclick="window.showAddApplicantModal('${job.id}')">+ Thêm ứng viên</button>
-                                <button class="text-xs font-semibold text-purple-500 hover:underline" onclick="window.editJob('${job.id}')">Sửa tin</button>
-                                <button class="text-xs font-semibold text-red-500 hover:underline" onclick="window.deleteJob('${job.id}')">Xóa tin</button>
+                               <button class="text-xs font-semibold text-blue-500 hover:underline" onclick="window.showAddApplicantModal('${job.id}')">+ Thêm ứng viên</button>
+                               <button class="text-xs font-semibold text-purple-500 hover:underline" onclick="window.editJob('${job.id}')">Sửa tin</button>
+                               <button class="text-xs font-semibold text-red-500 hover:underline" onclick="window.deleteJob('${job.id}')">Xóa tin</button>
                              </div>
                     </div>
                     <p class="text-sm font-semibold text-purple-500 my-2">Tổng ứng viên: ${job.applicants ? job.applicants.length : 0}</p>
@@ -855,10 +855,10 @@
         };
         const renderStudentAnalysisResult = (result) => {
             studentAnalysisContainer.innerHTML = `
-                 <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i>Kỹ Năng Cần Phát Triển</h3>
-                 <ul class="space-y-2">${result.skillsToDevelop.map(s => `<li class="flex items-center"><i class="fas fa-star text-yellow-400/50 mr-2"></i>${s}</li>`).join('') || '<p>Không có đề xuất.</p>'}</ul>
-                 <h3 class="text-xl font-bold mt-6 mb-4" style="color: var(--text-primary);"><i class="fas fa-road mr-2 text-green-500"></i>Lộ Trình Học Tập Gợi Ý</h3>
-                 <div class="space-y-3">${result.learningPath.map((p, i) => `<div class="p-3 rounded" style="background-color:var(--background-light)"><p class="font-bold"><span class="text-blue-500">Bước ${i+1}:</span> ${p.step}</p><p class="text-sm">${p.description}</p></div>`).join('') || '<p>Không có đề xuất.</p>'}</div>`;
+                   <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i>Kỹ Năng Cần Phát Triển</h3>
+                   <ul class="space-y-2">${result.skillsToDevelop.map(s => `<li class="flex items-center"><i class="fas fa-star text-yellow-400/50 mr-2"></i>${s}</li>`).join('') || '<p>Không có đề xuất.</p>'}</ul>
+                   <h3 class="text-xl font-bold mt-6 mb-4" style="color: var(--text-primary);"><i class="fas fa-road mr-2 text-green-500"></i>Lộ Trình Học Tập Gợi Ý</h3>
+                   <div class="space-y-3">${result.learningPath.map((p, i) => `<div class="p-3 rounded" style="background-color:var(--background-light)"><p class="font-bold"><span class="text-blue-500">Bước ${i+1}:</span> ${p.step}</p><p class="text-sm">${p.description}</p></div>`).join('') || '<p>Không có đề xuất.</p>'}</div>`;
             const chartLabels = result.skills.map(s => s.name); // Defined chartLabels here
             const chartDatasets = [{ 
                 label: 'Mức độ thành thạo', 
@@ -1116,12 +1116,16 @@
             }
             counselingResultsContainer.innerHTML = `<p class="text-center">Đang phân tích...</p>`; // Clear and show loading state
 
-
-            if (!interests && !skills && !favoriteSubject && !careerGoal && techInterest === '50' && creativityInterest === '50' && communicationInterest === '50' && logicInterest === '50') {
-                showCustomMessage('Vui lòng nhập ít nhất một thông tin hoặc điều chỉnh các mức độ yêu thích để AI có thể tư vấn.', "warning");
+            // --- Start Input Validation ---
+            // New strict validation: if any text field is empty OR any slider is at its default (50)
+            if (interests === '' || skills === '' || favoriteSubject === '' || careerGoal === '' ||
+                techInterest === '50' || creativityInterest === '50' || communicationInterest === '50' || logicInterest === '50') {
+                showCustomMessage('Vui lòng điền đầy đủ tất cả các thông tin và điều chỉnh các mức độ yêu thích để AI có thể tư vấn chính xác.', "warning");
                 hideLoading(); // Hide loading if validation fails
-                return;
+                counselingResultsContainer.innerHTML = `<p class="text-center">Kết quả tư vấn sẽ hiện ở đây sau khi bạn phân tích.</p>`; // Reset message
+                return; // Stop execution if validation fails
             }
+            // --- End Input Validation ---
 
             showLoading('AI đang phân tích sở thích và kỹ năng của bạn...');
 
@@ -1349,7 +1353,7 @@
                         throw new Error("Nội dung PDF quá ngắn hoặc không đọc được.");
                     }
                     description = extracted.text; // Prioritize text from PDF if file is provided
-                    jdBase64 = extracted.base64; // Store Base64 for JD
+                    jdBase64 = extracted.base64; // Store Base64
                     // Size check is already in extractPdfTextAndBase64
                 } catch (error) {
                     showCustomMessage(`Lỗi đọc file PDF: ${error.message}. Vui lòng thử nhập thủ công.`, "error");
@@ -1483,9 +1487,9 @@
                 try {
                     const { text: cvText, base64: cvBase64 } = await extractPdfTextAndBase64(cvFile);
                     if (!cvText || cvText.length < 50) {
-                         showCustomMessage('Nội dung CV quá ngắn hoặc không đọc được từ file PDF. Vui lòng kiểm tra lại file.', "error");
-                         hideLoading();
-                         return;
+                           showCustomMessage('Nội dung CV quá ngắn hoặc không đọc được từ file PDF. Vui lòng kiểm tra lại file.', "error");
+                           hideLoading();
+                           return;
                     }
                     // Size check is already in extractPdfTextAndBase64
                     
@@ -1559,13 +1563,13 @@
                     <button class="js-modal-close absolute top-4 right-5 text-2xl font-bold">&times;</button>
                     <h3 class="text-xl font-bold mb-4 text-center">Kết quả Phân tích Ứng viên: ${applicant.name || `Ứng viên #${applicantIndex + 1}`}</h3>
                      <div class="text-center mb-4">
-                        <h4 class="font-semibold mb-1" style="color: var(--text-primary);">Điểm phù hợp</h4>
-                        <p class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">${result.matchScore}%</p>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-6 items-center">
-                        <div><h4 class="font-semibold mb-2 text-center" style="color: var(--text-primary);">Biểu đồ so sánh kỹ năng</h4><div class="h-80"><canvas id="enterpriseRadarChartModal"></canvas></div></div>
-                        <div><h4 class="font-semibold mb-2 mt-4" style="color: var(--text-primary);">Tóm tắt của AI:</h4><p class="p-3 rounded-lg text-sm" style="background-color: var(--background-light);">${result.summary}</p></div>
-                    </div>`;
+                         <h4 class="font-semibold mb-1" style="color: var(--text-primary);">Điểm phù hợp</h4>
+                         <p class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">${result.matchScore}%</p>
+                     </div>
+                     <div class="grid md:grid-cols-2 gap-6 items-center">
+                         <div><h4 class="font-semibold mb-2 text-center" style="color: var(--text-primary);">Biểu đồ so sánh kỹ năng</h4><div class="h-80"><canvas id="enterpriseRadarChartModal"></canvas></div></div>
+                         <div><h4 class="font-semibold mb-2 mt-4" style="color: var(--text-primary);">Tóm tắt của AI:</h4><p class="p-3 rounded-lg text-sm" style="background-color: var(--background-light);">${result.summary}</p></div>
+                     </div>`;
                 modals.analysis.classList.add('active');
                 
                 setTimeout(() => {

@@ -1294,11 +1294,17 @@
                 <span>Tìm Kiếm</span>
             </a>
             <a href="studymate.html" class="main-nav-item" id="studymate-nav-item">
-                <img src="https://placehold.co/30x30/EC4899/FFFFFF?text=AI" alt="AI4Life Logo"
-                    class="nav-item-logo"
-                    onerror="this.onerror=null;this.src='https://placehold.co/30x30/EC4899/FFFFFF?text=AI';">
                 <i class="fas fa-user-graduate"></i>
-                <span>AI4Life</span>
+                <span>StudyMate AI</span>
+            </a>
+            <a href="#" class="main-nav-item" id="notification-nav-item">
+                <i class="fas fa-bell"></i>
+                <span id="notification-bell-badge" class="notification-badge">0</span>
+                <span>Thông Báo</span>
+            </a>
+            <a href="hoso.html" class="main-nav-item" id="profile-nav-item">
+                <i class="fas fa-user"></i>
+                <span>Hồ Sơ</span>
             </a>
         </nav>
 
@@ -1383,6 +1389,41 @@
                             <i class="fas fa-chart-line category-icon"></i>
                             <div class="category-name">AI Phân Tích Kỹ Năng</div>
                             <div class="category-description">Xác định điểm mạnh, yếu, gợi ý lộ trình.</div>
+                        </div>
+                    </a>
+                    <a href="resource_curator.html" class="category-link">
+                        <div class="category-card" data-function="resource-curator">
+                            <i class="fas fa-book-open category-icon"></i>
+                            <div class="category-name">Tổng Hợp Học Liệu AI</div>
+                            <div class="category-description">Tóm tắt tài liệu, đề xuất nguồn học liệu.</div>
+                        </div>
+                    </a>
+                    <a href="career_and_interview.html" class="category-link">
+                        <div class="category-card" data-function="career-interview">
+                            <i class="fas fa-handshake category-icon"></i>
+                            <div class="category-name">Cố Vấn & Phỏng Vấn AI</div>
+                            <div class="category-description">Định hướng nghề, luyện phỏng vấn ảo.</div>
+                        </div>
+                    </a>
+                    <a href="schedule_manager.html" class="category-link">
+                        <div class="category-card" data-function="schedule-reminder">
+                            <i class="fas fa-calendar-alt category-icon"></i>
+                            <div class="category-name">Quản Lý Lịch Trình</div>
+                            <div class="category-description">Tối ưu thời gian biểu, nhắc nhở deadline.</div>
+                        </div>
+                    </a>
+                    <a href="community.html" class="category-link">
+                        <div class="category-card" data-function="community-connect">
+                            <i class="fas fa-users category-icon"></i>
+                            <div class="category-name">Cộng Đồng AI & Kết Nối</div>
+                            <div class="category-description">Tìm bạn học, lập nhóm dự án thông minh.</div>
+                        </div>
+                    </a>
+                    <a href="tintuc.html" class="category-link">
+                        <div class="category-card" data-function="news-reader">
+                            <i class="fas fa-newspaper category-icon"></i>
+                            <div class="category-name">Trợ Lý Đọc Tin Tức AI</div>
+                            <div class="category-description">Cập nhật, tóm tắt, đọc báo theo chủ đề.</div>
                         </div>
                     </a>
                     <a href="studymate.html" class="category-link">
@@ -1697,8 +1738,14 @@
 
             // --- Integrated Search and Autocomplete Functionality ---
             const allFunctions = [
-                { name: "AI Phân Tích Kỹ Năng", description: "Xác định điểm mạnh, yếu, gợi ý lộ trình học tập cá nhân hóa.", link: "skill_analysis.html" },
-                { name: "AI4Life", description: "Trợ lý học tập thông minh mọi lúc, mọi nơi.", link: "studymate.html" }
+                { name: "Phân Tích Kỹ Năng AI", description: "Xác định điểm mạnh, yếu, gợi ý lộ trình học tập cá nhân hóa.", link: "skill_analysis.html" },
+                { name: "Tổng Hợp Học Liệu AI", description: "Tóm tắt nội dung phức tạp, đề xuất tài liệu học tập chất lượng cao.", link: "resource_curator.html" },
+                { name: "Cố Vấn & Phỏng Vấn AI", description: "Định hướng nghề, luyện phỏng vấn ảo.", link: "career_and_interview.html" },
+                { name: "Quản Lý Lịch Trình", description: "Tối ưu thời gian biểu, nhắc nhở deadline.", link: "schedule_manager.html" },
+                { name: "Cộng Đồng AI & Kết Nối", description: "Tìm bạn học, lập nhóm dự án thông minh.", link: "community.html" },
+                { name: "Trợ Lý Đọc Tin Tức AI", description: "Cập nhật, tóm tắt, đọc báo theo chủ đề.", link: "tintuc.html" },
+                { name: "StudyMate AI", description: "Trợ lý học tập thông minh mọi lúc, mọi nơi.", link: "studymate.html" },
+                { name: "Hồ Sơ Cá Nhân", description: "Quản lý thông tin cá nhân, ảnh đại diện, ảnh bìa.", link: "hoso.html" }
             ];
 
             const renderSearchResults = (results, queryEmpty) => {
