@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI4Life - Trợ Lý AI Cá Nhân Cho Sinh Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom color variables (for easy theme management) */
+        :root {
+            /* Light Theme Defaults */
+            --primary-blue: #3b82f6;
+            /* Tailwind blue-500 */
+            --dark-blue: #1d4ed8;
+            /* Tailwind blue-700 */
+            --light-blue: #bfdbfe;
+            /* Tailwind blue-200 */
+            --accent-pink: #ec4899;
+            /* Tailwind pink-500 */
+            --background-light: #f9fafb;
+            /* Tailwind gray-50 */
+            --card-background: #ffffff;
+            /* White */
+            --text-primary: #1f2937;
+            /* Tailwind gray-900 */
+            --text-secondary: #6b7280;
+            /* Tailwind gray-500 */
+            --border-color: #e5e7eb;
+            /* Tailwind gray-200 */
+            --ad-marquee-bg: #e0f2fe;
+            /* Light blue for light theme marquee */
+            --ad-marquee-text: #0b72e7;
+            /* Darker blue for light theme marquee text */
+
+            /* Header Search specific */
+            --header-search-bg: #e5e7eb; /* Gray-200 */
+            --header-search-text: #1f2937; /* Gray-900 */
+            --header-search-placeholder: #6b7280; /* Gray-500 */
+            --header-search-border: #d1d5db; /* Gray-300 */
+            --header-search-focus-border: var(--primary-blue);
+            --header-search-focus-ring: rgba(59, 130, 246, 0.3); /* Blue-500 with opacity */
+
+            /* Autocomplete Suggestions */
+            --autocomplete-bg: #ffffff;
+            --autocomplete-border: #e5e7eb;
+            --autocomplete-item-hover-bg: #eff6ff; /* blue-50 */
+            --autocomplete-item-text: #1f2937;
+        }
+
+        /* Dark Theme Variables */
+        html.dark-theme {
+            --primary-blue: #60a5fa;
+            /* Tailwind blue-400 */
+            --dark-blue: #3b82f6;
+            /* Tailwind blue-500 */
+            --light-blue: #1e3a8a;
+            /* Tailwind blue-900 */
+            --accent-pink: #f472b6;
+            /* Tailwind pink-400 */
+            --background-light: #111827;
+            /* Tailwind gray-900 */
+            --card-background: #1f2937;
+            /* Tailwind gray-800 */
+            --text-primary: #f3f4f6;
+            /* Tailwind gray-100 */
+            --text-secondary: #9ca3af;
+            /* Tailwind gray-400 */
+            --border-color: #374151;
+            /* Tailwind gray-700 */
+            --ad-marquee-bg: #374151;
+            /* Dark gray for dark theme marquee */
+            --ad-marquee-text: #93c5fd;
+            /* Light blue for dark theme marquee text */
+
+            /* Header Search specific for dark theme */
+            --header-search-bg: #374151; /* Gray-700 */
+            --header-search-text: #f3f4f6; /* Gray-100 */
+            --header-search-placeholder: #9ca3af; /* Gray-400 */
+            --header-search-border: #4b5563; /* Gray-600 */
+            --header-search-focus-border: var(--primary-blue);
+            --header-search-focus-ring: rgba(96, 165, 250, 0.3); /* Blue-400 with opacity */
+
+            /* Autocomplete Suggestions Dark Theme */
+            --autocomplete-bg: #1f2937;
+            --autocomplete-border: #4b5563;
+            --autocomplete-item-hover-bg: #374151; /* gray-700 */
+            --autocomplete-item-text: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        .app-container {
+            width: 95%;
+            max-width: 1280px;
+            min-height: 100vh;
+            background-color: var(--card-background);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 2rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin: 1.5rem 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(to right, var(--primary-blue), #8b5cf6);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            border-top-left-radius: 2rem;
+            border-top-right-radius: 2rem;
+            transition: background 0.3s ease;
+            /* Smooth transition for theme change */
+            gap: 1.5rem; /* Space between title group, search, and icons */
+        }
+
+        .app-header .app-title-group {
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.03em;
+            font-size: 2rem;
+            font-weight: 800;
+            flex-shrink: 0; /* Prevent title from shrinking */
+        }
+
+        .app-header .app-logo {
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .app-header .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0; /* Prevent icons from shrinking */
+        }
+
+        .app-header .settings-icon,
+        .theme-toggle-icon {
+            font-size: 2rem;
+            padding: 0.6rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .app-header .settings-icon:hover,
+        .theme-toggle-icon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Header Search Bar with Autocomplete */
+        .header-search-wrapper {
+            position: relative; /* Needed for positioning the suggestions */
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-search-container {
+            width: 100%; /* Take full width of its container */
+            display: flex;
+            align-items: center;
+            border-radius: 9999px; /* Full rounded */
+            background-color: var(--header-search-bg);
+            border: 1px solid var(--header-search-border);
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .header-search-input {
+            width: 100%; /* Take full width of its container */
+            padding: 0.75rem 1.25rem; /* Adjusted padding */
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: var(--header-search-text);
+            font-size: 1rem;
+            line-height: 1.5; /* Ensure text fits well */
+            transition: color 0.3s ease;
+        }
+
+        .header-search-input::placeholder {
+            color: var(--header-search-placeholder);
+            transition: color 0.3s ease;
+        }
+
+        .header-search-input:focus {
+            box-shadow: 0 0 0 3px var(--header-search-focus-ring);
+            border-color: var(--header-search-focus-border);
+        }
+
+        /* Autocomplete Suggestions Styling */
+        #autocomplete-suggestions {
+            position: absolute;
+            top: 100%; /* Position below the input */
+            left: 0;
+            width: 100%;
+            background-color: var(--autocomplete-bg);
+            border: 1px solid var(--autocomplete-border);
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100; /* Ensure it's above other content */
+            max-height: 200px; /* Limit height and add scrollbar */
+            overflow-y: auto;
+            display: none; /* Hidden by default */
+            margin-top: 0.5rem; /* Space between input and suggestions */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1.25rem;
+            color: var(--autocomplete-item-text);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--autocomplete-item-hover-bg);
+        }
+
+
+        /* Marquee Text Styles (CSS Animation) */
+        .ad-marquee-container {
+            background-color: var(--ad-marquee-bg);
+            padding: 0.75rem 1.25rem;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: background-color 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        .ad-marquee-text {
+            color: var(--ad-marquee-text);
+            font-weight: 700;
+            /* Make text bolder */
+            font-size: 1.05rem;
+            /* Slightly larger font */
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll-left 20s linear infinite;
+            /* Adjusted speed */
+            animation-delay: 0s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            /* Subtle text shadow */
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Main Navigation */
+        .main-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--card-background);
+            padding: 1rem 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            z-index: 9;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        .main-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            transition: color 0.2s ease, transform 0.2s ease;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .main-nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .main-nav-item.active {
+            color: var(--primary-blue);
+            transform: translateY(-3px);
+        }
+
+        .main-nav-item:not(.active):hover {
+            color: var(--dark-blue);
+        }
+
+        .main-nav-item .nav-item-logo {
+            width: 2rem;
+            height: 2rem;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+            border-radius: 0.375rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        .main-nav-item.active .nav-item-logo,
+        .main-nav-item:hover .nav-item-logo {
+            transform: translateY(-0.1rem);
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Notification badge on bell icon */
+        .notification-badge {
+            position: absolute;
+            top: 0.2rem;
+            right: 0.8rem;
+            background-color: #ef4444;
+            /* Red color */
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+            min-width: 1rem;
+            text-align: center;
+            line-height: 1;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification-badge.active {
+            display: block;
+        }
+
+        /* Main content area */
+        .app-main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 30px;
+            scroll-behavior: smooth;
+            padding-top: 0;
+        }
+
+        /* Custom scrollbar for main content */
+        .app-main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .app-main-content::-webkit-scrollbar-track {
+            background: var(--background-light);
+            border-radius: 10px;
+        }
+
+        .app-main-content::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            /* Tailwind slate-400, darker */
+            border-radius: 10px;
+        }
+
+        .app-main-content::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+            /* Tailwind slate-600 */
+        }
+
+        /* General card style */
+        .card {
+            background-color: var(--card-background);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        /* Welcome text */
+        .welcome-text {
+            color: var(--dark-blue);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 2rem 1.5rem;
+            line-height: 1.6;
+            transition: color 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        /* Slideshow card */
+        .slideshow-card {
+            background-color: var(--card-background);
+            margin: 1.5rem;
+            border-radius: 1.75rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            height: 350px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        .slideshow-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .my-slides {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: fadeEffect 1.5s ease-in-out;
+        }
+
+        @keyframes fadeEffect {
+            from {
+                opacity: 0.3;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.2));
+            color: white;
+            padding: 2rem;
+        }
+
+        .slide-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.03em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide-description {
+            font-size: 1.15rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .dot-container {
+            text-align: center;
+            padding: 0.8rem 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            z-index: 5;
+        }
+
+        .dot {
+            height: 12px;
+            width: 12px;
+            margin: 0 0.5rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dot.active,
+        .dot:hover {
+            background-color: var(--primary-blue);
+            transform: scale(1.4);
+        }
+
+        /* Section title for categories */
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 2rem 1.5rem 1rem 1.5rem;
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+            /* Smooth transition for theme change */
+        }
+
+        /* Categories grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .category-card {
+            background-color: var(--card-background);
+            border-radius: 1.5rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.3s ease;
+            height: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .category-card:hover {
+            transform: translateY(-0.35rem);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+            background-color: var(--light-blue);
+            /* Uses a light blue from theme vars */
+        }
+
+        html.dark-theme .category-card:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .category-card .category-icon {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .category-card .category-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            transition: color 0.3s ease;
+        }
+
+        .category-card .category-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+
+        /* New notification system style (for general app pop-up notifications) */
+        #notification-modal-overlay,
+        #settings-modal-overlay,
+        #logout-confirm-modal-overlay,
+        #custom-confirm-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #notification-modal-overlay.active,
+        #settings-modal-overlay.active,
+        #logout-confirm-modal-overlay.active,
+        #custom-confirm-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .notification-content,
+        .settings-modal-content,
+        .modal-content {
+            background-color: var(--card-background);
+            padding: 2.5rem;
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(-40px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        #notification-modal-overlay.active .notification-content,
+        #settings-modal-overlay.active .settings-modal-content,
+        #logout-confirm-modal-overlay.active .modal-content,
+        #custom-confirm-modal-overlay.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-content.success {
+            border: 3px solid #10b981;
+            color: #047857;
+        }
+
+        /* green-500 */
+        .notification-content.error {
+            border: 3px solid #ef4444;
+            color: #b91c1c;
+        }
+
+        /* red-500 */
+        .notification-content.info {
+            border: 3px solid var(--primary-blue);
+            color: var(--dark-blue);
+        }
+
+        .notification-content.warning {
+            border: 3px solid #f59e0b;
+            color: #c2410c;
+        }
+
+        /* orange-500 */
+
+        .notification-message {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .notification-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.4rem;
+            border-radius: 50%;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .notification-close-button:hover {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+        }
+
+        /* Styles for integrated search section (only for results now) */
+        #search-section {
+            padding: 2rem;
+            display: none;
+            /* Hidden by default */
+        }
+
+        /* Remove original search input styling, as it's moved to header */
+        #search-section .card {
+            /* Keep card styling for the results container */
+            background-color: var(--card-background);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+
+        .search-result-item {
+            background-color: var(--background-light);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-result-item:hover {
+            transform: translateY(-0.2rem);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            background-color: var(--light-blue);
+        }
+
+        html.dark-theme .search-result-item:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .search-result-item h3 {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+            transition: color 0.3s ease;
+        }
+
+        .search-result-item p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+
+        #aiSuggestion {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding: 0 0.8rem;
+            transition: color 0.3s ease;
+        }
+
+        /* Styles for integrated notifications list section */
+        #notifications-list-section {
+            padding: 2rem;
+            display: none;
+        }
+
+        .notification-item {
+            background-color: var(--background-light);
+            border-left: 6px solid;
+            padding: 1.25rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .notification-item.info {
+            border-color: var(--primary-blue);
+        }
+
+        .notification-item.success {
+            border-color: #10b981;
+        }
+
+        .notification-item.warning {
+            border-color: #f59e0b;
+        }
+
+        .notification-item.error {
+            border-color: #ef4444;
+        }
+
+        .notification-icon-list {
+            font-size: 1.8rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+            transition: color 0.3s ease;
+        }
+
+        .notification-item.info .notification-icon-list {
+            color: var(--primary-blue);
+        }
+
+        .notification-item.success .notification-icon-list {
+            color: #10b981;
+        }
+
+        .notification-item.warning .notification-icon-list {
+            color: #f59e0b;
+        }
+
+        .notification-item.error .notification-icon-list {
+            color: #ef4444;
+        }
+
+        .notification-item p:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            transition: color 0.3s ease;
+        }
+
+        .notification-item p:last-child {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            border-bottom-left-radius: 2rem;
+            border-bottom-right-radius: 2rem;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: auto;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-footer .social-icons a {
+            color: #d1d5db;
+            margin: 0 0.75rem;
+            font-size: 1.5rem;
+            transition: color 0.2s ease;
+        }
+
+        .app-footer .social-icons a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Responsive adjustments */
+        /* Tablet breakpoint */
+        @media (max-width: 768px) {
+            .app-container {
+                width: 98%;
+                max-width: 768px;
+                border-radius: 1.5rem;
+                margin: 1rem 0;
+            }
+
+            .app-header {
+                padding: 1.2rem 1.8rem;
+                font-size: 1.8rem;
+                flex-wrap: wrap;
+                /* Allow items to wrap on smaller screens */
+                gap: 1rem;
+                /* Adjust gap for wrapping */
+            }
+
+            .app-header .app-title-group {
+                font-size: 1.8rem;
+            }
+
+            .app-header .app-logo {
+                height: 2rem;
+                width: 2rem;
+                margin-right: 0.6rem;
+            }
+
+            .app-header .settings-icon,
+            .theme-toggle-icon {
+                font-size: 1.8rem;
+            }
+
+            .header-search-wrapper { /* Adjust wrapper for smaller screens */
+                width: 100%;
+                order: 3;
+            }
+
+
+            .main-nav {
+                padding: 0.8rem 0;
+            }
+
+            .main-nav-item {
+                font-size: 0.8rem;
+            }
+
+            .main-nav-item i {
+                font-size: 1.4rem;
+            }
+
+            .main-nav-item .nav-item-logo {
+                width: 1.8rem;
+                height: 1.8rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .welcome-text,
+            .section-title {
+                margin: 1.8rem 1.2rem;
+                font-size: 1.5rem;
+            }
+
+            .slideshow-card {
+                margin: 1.2rem;
+                height: 280px;
+                border-radius: 1.5rem;
+            }
+
+            .slide-title {
+                font-size: 1.5rem;
+            }
+
+            .slide-description {
+                font-size: 1rem;
+            }
+
+            .dot-container {
+                padding: 0.7rem 0;
+            }
+
+            .dot {
+                height: 9px;
+                width: 9px;
+            }
+
+            .categories-grid {
+                padding: 0 1.2rem;
+                gap: 1.2rem;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .category-card {
+                padding: 1.5rem;
+                border-radius: 1.25rem;
+            }
+
+            .category-card .category-icon {
+                font-size: 3.5rem;
+            }
+
+            .category-card .category-name {
+                font-size: 1rem;
+            }
+
+            .category-card .category-description {
+                font-size: 0.8rem;
+            }
+
+            #search-section,
+            #notifications-list-section {
+                padding: 1.5rem;
+            }
+
+            .card {
+                padding: 1.8rem;
+                border-radius: 1.25rem;
+            }
+
+            /* #integratedSearchInput is now .header-search-input */
+            .header-search-input {
+                padding: 0.8rem 1.25rem;
+                font-size: 1rem;
+            }
+
+            #notificationSearchInput,
+            #notificationSearchButton {
+                padding: 0.8rem 1.25rem;
+                font-size: 1rem;
+            }
+
+            .search-result-item {
+                padding: 1.2rem;
+                border-radius: 0.8rem;
+            }
+
+            .search-result-item h3 {
+                font-size: 1.05rem;
+                /* Adjusted for consistency */
+            }
+
+            .search-result-item p {
+                font-size: 0.85rem;
+            }
+
+            .notification-content,
+            .settings-modal-content,
+            .modal-content {
+                padding: 2rem;
+                border-radius: 1rem;
+                max-width: 360px;
+            }
+
+            .notification-message {
+                font-size: 1.1rem;
+            }
+
+            .notification-close-button {
+                font-size: 1.6rem;
+                top: 0.8rem;
+                right: 0.8rem;
+            }
+
+            .notification-item {
+                padding: 1rem 1.2rem;
+                border-radius: 0.8rem;
+            }
+
+            .notification-icon-list {
+                font-size: 1.6rem;
+            }
+
+            .notification-item p:first-child {
+                font-size: 0.9rem;
+            }
+
+            .notification-item p:last-child {
+                font-size: 0.8rem;
+            }
+
+            .app-footer {
+                padding: 1.2rem 1.5rem;
+            }
+        }
+
+        /* Mobile breakpoint */
+        @media (max-width: 480px) {
+            body {
+                min-height: 100vh;
+                align-items: stretch;
+            }
+
+            .app-container {
+                border-radius: 0;
+                max-width: 100%;
+                min-height: 100vh;
+                box-shadow: none;
+                margin: 0;
+            }
+
+            .app-header {
+                border-radius: 0;
+                padding: 1rem 1.25rem;
+                font-size: 1.5rem;
+                flex-wrap: wrap;
+                /* Ensure header items wrap */
+                gap: 0.8rem;
+            }
+
+            .app-header .app-title-group {
+                font-size: 1.5rem;
+            }
+
+            .app-header .app-logo {
+                height: 2rem;
+                width: 2rem;
+                margin-right: 0.5rem;
+            }
+
+            .app-header .settings-icon,
+            .theme-toggle-icon {
+                font-size: 1.5rem;
+            }
+
+            .header-search-wrapper { /* Adjust wrapper for smaller screens */
+                width: 100%;
+                order: 3;
+            }
+
+            .main-nav {
+                padding: 0.6rem 0;
+            }
+
+            .main-nav-item {
+                font-size: 0.65rem;
+            }
+
+            .main-nav-item i {
+                font-size: 1.2rem;
+                margin-bottom: 0.1rem;
+            }
+
+            .main-nav-item .nav-item-logo {
+                width: 1.5rem;
+                height: 1.5rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .welcome-text,
+            .section-title {
+                margin: 1.5rem 0.8rem;
+                font-size: 1.25rem;
+            }
+
+            .slideshow-card {
+                margin: 1rem;
+                height: 200px;
+                border-radius: 1rem;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            }
+
+            .slide-title {
+                font-size: 1.3rem;
+                margin-bottom: 0.2rem;
+            }
+
+            .slide-description {
+                font-size: 0.9rem;
+            }
+
+            .dot-container {
+                padding: 0.5rem 0;
+            }
+
+            .dot {
+                height: 8px;
+                width: 8px;
+                margin: 0 0.25rem;
+            }
+
+            .categories-grid {
+                padding: 0 1rem;
+                gap: 1rem;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+
+            .category-card {
+                padding: 1.2rem;
+                border-radius: 0.8rem;
+            }
+
+            .category-card .category-icon {
+                font-size: 3rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .category-card .category-name {
+                font-size: 0.95rem;
+            }
+
+            .category-card .category-description {
+                font-size: 0.75rem;
+            }
+
+            #search-section,
+            #notifications-list-section {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+
+            .header-search-input {
+                /* Updated for header search */
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            #notificationSearchInput,
+            #notificationSearchButton {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .search-result-item {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+
+            .search-result-item h3 {
+                font-size: 0.95rem;
+            }
+
+            .search-result-item p {
+                font-size: 0.8rem;
+            }
+
+            .notification-content,
+            .settings-modal-content,
+            .modal-content {
+                padding: 1.8rem;
+                border-radius: 0.9rem;
+                max-width: 300px;
+            }
+
+            .notification-message {
+                font-size: 1rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .notification-close-button {
+                font-size: 1.4rem;
+                top: 0.6rem;
+                right: 0.6rem;
+            }
+
+            .notification-item {
+                padding: 0.9rem 1.1rem;
+                border-radius: 0.75rem;
+            }
+
+            .notification-icon-list {
+                font-size: 1.4rem;
+            }
+
+            .notification-item p:first-child {
+                font-size: 0.85rem;
+            }
+
+            .notification-item p:last-child {
+                font-size: 0.75rem;
+            }
+
+            .app-footer {
+                padding: 1rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <!-- Group the logo and title together using a div with a class for styling -->
+            <div class="app-title-group">
+                <img src="img/11.jpg.png" alt="AI4Life Logo" class="app-logo"
+                    onerror="this.onerror=null;this.src='https://placehold.co/32x32/3b82f6/FFFFFF?text=AI';">
+                <span class="app-title">AI4Life</span>
+            </div>
+            <!-- Search bar integrated into the header -->
+            <div class="header-search-wrapper">
+                <div class="header-search-container">
+                    <input type="text" id="headerSearchInput" placeholder="Tìm kiếm chức năng..."
+                        class="header-search-input">
+                </div>
+                <!-- Autocomplete Suggestions Container -->
+                <div id="autocomplete-suggestions"></div>
+            </div>
+            <div class="header-icons">
+                <i class="fas fa-adjust theme-toggle-icon" id="theme-toggle-button" title="Chế độ sáng/tối"></i>
+                <i class="fas fa-cog settings-icon" title="Cài đặt"></i>
+            </div>
+        </header>
+
+        <!-- Scrolling Ad Text (Marquee) -->
+        <div class="ad-marquee-container">
+            <span class="ad-marquee-text" id="dynamic-marquee-text">
+                <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
+            </span>
+        </div>
+        <!-- End Scrolling Ad Text -->
+
+        <nav id="main-nav" class="main-nav">
+            <a href="#" class="main-nav-item active" id="home-nav-item">
+                <img src="https://placehold.co/30x30/BFDBFE/1D4ED8?text=HOME" alt="Home Logo" class="nav-item-logo"
+                    onerror="this.onerror=null;this.src='https://placehold.co/30x30/BFDBFE/1D4ED8?text=HOME';">
+                <i class="fas fa-home"></i>
+                <span>Trang Chủ</span>
+            </a>
+            <a href="#" class="main-nav-item" id="search-nav-item">
+                <img src="https://placehold.co/30x30/D1D5DB/3B82F6?text=SEARCH" alt="Search Logo" class="nav-item-logo"
+                    onerror="this.onerror=null;this.src='https://placehold.co/30x30/D1D5DB/3B82F6?text=SEARCH';">
+                <i class="fas fa-search"></i>
+                <span>Tìm Kiếm</span>
+            </a>
+            <a href="studymate.html" class="main-nav-item" id="studymate-nav-item">
+                <img src="https://placehold.co/30x30/EC4899/FFFFFF?text=AI" alt="AI4Life Logo"
+                    class="nav-item-logo"
+                    onerror="this.onerror=null;this.src='https://placehold.co/30x30/EC4899/FFFFFF?text=AI';">
+                <i class="fas fa-user-graduate"></i>
+                <span>AI4Life</span>
+            </a>
+        </nav>
+
+        <main class="app-main-content">
+            <div id="home-section">
+                <p class="welcome-text">Các tính năng AI nổi bật mới nhất của AI4Life, được phát triển bởi 3 thành viên
+                    của AI4Life. Hãy cùng khám phá những tính năng mới nhất của AI4Life</p>
+
+                <div class="slideshow-card">
+                    <div class="slideshow-container">
+                        <div class="my-slides fade">
+                            <img src="img/im5.png"
+                                alt="AI Skill Analysis" class="slide-img"
+                                onerror="this.onerror=null;this.src='https://placehold.co/1280x350/A0B8C0/FFFFFF?text=AI+Skill+Analysis';">
+                            <div class="slide-content">
+                                <div class="slide-title"> AI4Life Phát triển bởi 3 thành viên </div>
+                                <div class="slide-description">AI4Life là một nhóm phát triển AI
+                                    hỗ trợ sinh Group Rising Dragon Tech</div>
+                                <div class="slide-description">AI4Life Hỗ trợ giải pháp toàn cho sinh viên thành
+                                    lập sáng tạo bởi Nguyễn Ngọc Tú</div>
+                            </div>
+                        </div>
+                        <div class="my-slides fade">
+                            <img src="img/im10.png"
+                                alt="AI Resource Curator" class="slide-img"
+                                onerror="this.onerror=null;this.src='https://placehold.co/1280x350/C0A0B8/FFFFFF?text=AI+Resource+Curator';">
+                            <div class="slide-content">
+                                <div class="slide-title">Rising Dragon Tech Phát triển bởi được thành lập bởi 3 thành
+                                    viên </div>
+                                <div class="slide-description">Rising Dragon Tech là một nhóm phát triển AI4Life
+                                </div>
+                            </div>
+                        </div>
+                        <div class="my-slides fade">
+                            <img src="img/im5.png"
+                                alt="AI Schedule Manager" class="slide-img"
+                                onerror="this.onerror=null;this.src='https://placehold.co/1280x350/B8C0A0/FFFFFF?text=AI+Schedule+Manager';">
+                            <div class="slide-content">
+                                <div class="slide-title">Quản lý lịch trình hiệu quả</div>
+                                <div class="slide-description">Sử dụng AI để tối ưu hóa thời gian biểu và nhắc nhở các
+                                    deadline quan trọng.</div>
+                            </div>
+                        </div>
+                        <div class="my-slides fade">
+                            <img src="img/img6.png"
+                                alt="AI News Reader" class="slide-img"
+                                onerror="this.onerror=null;this.src='https://placehold.co/1280x350/A0C0B8/FFFFFF?text=AI+News+Reader';">
+                            <div class="slide-content">
+                                <div class="slide-title">CUỘC THI AI4LIFE 2025 - SÂN CHƠI SÁNG TẠO CHO SINH VIÊN CNTT
+                                    FPT POLYTECHNIC</div>
+                                <div class="slide-description">Cuộc thi phát triển các ứng dụng web hoặc mobile tích hợp
+                                    AI hỗ trợ đời sống hàng ngày và học tập của các sinh viên ví dụ như chatbot tư vấn
+                                    học tập, app ghi chú thông minh, hay công cụ quản lý thời gian.…. để hỗ trợ trong
+                                    học tập hay cuộc sống sinh viên!</div>
+                            </div>
+                        </div>
+                        <div class="my-slides fade">
+                            <img src="img/img9.jpg"
+                                alt="AI Community Connect" class="slide-img"
+                                onerror="this.onerror=null;this.src='https://placehold.co/1280x350/B8A0C0/FFFFFF?text=AI+Community+Connect';">
+                            <div class="slide-content">
+                                <div class="slide-title">Cộng đồng & Kết nối</div>
+                                <div class="slide-description">Tìm kiếm bạn học và lập nhóm dự án thông minh với AI.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dot-container">
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                        <span class="dot" onclick="currentSlide(3)"></span>
+                        <span class="dot" onclick="currentSlide(4)"></span>
+                        <span class="dot" onclick="currentSlide(5)"></span>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Khám Phám Các Chức Năng AI</h2>
+
+                <div class="categories-grid">
+                    <a href="skill_analysis.html" class="category-link">
+                        <div class="category-card" data-function="skill-analysis">
+                            <i class="fas fa-chart-line category-icon"></i>
+                            <div class="category-name">AI Phân Tích Kỹ Năng</div>
+                            <div class="category-description">Xác định điểm mạnh, yếu, gợi ý lộ trình.</div>
+                        </div>
+                    </a>
+                    <a href="studymate.html" class="category-link">
+                        <div class="category-card" data-function="studymate-ai">
+                            <i class="fas fa-user-graduate category-icon"></i>
+                            <div class="category-name">AI4Life</div>
+                            <div class="category-description">Trợ lý học tập thông minh mọi lúc, mọi nơi.</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- This section now only displays search results -->
+            <div id="search-section" class="hidden p-6">
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Kết Quả Tìm Kiếm</h2>
+                    <p class="text-gray-600 mb-4" id="search-section-intro">Sử dụng ô tìm kiếm phía trên để tìm các chức năng. Dưới đây là tất cả các chức năng có sẵn:</p>
+                    <div id="searchResults" class="space-y-3">
+                        <!-- Search results will be rendered here -->
+                    </div>
+                     <div id="aiSuggestion" class="text-sm text-gray-500 mt-2">
+                        <!-- AI suggestions/empty search messages will be here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- The notification list section has been removed entirely -->
+
+        </main>
+
+        <footer class="app-footer">
+            <div class="container mx-auto">
+                <p class="text-sm">AI4Life là một sản phẩm của Rising Dragon Tech, được phát triển bởi 3 thành viên
+                    bởi nhóm Rising Dragon Tech</p>
+                <p class="text-sm">Chịu trách nhiệm nội dung Nguyễn Ngọc Tú © 2025 AI4Life. All rights reserved
+                </p>
+                <p class="text-sm">Địa chỉ: FPT Polytechnic, Phương canh , Nam Từ Liêm, Hà Nội, Việt Nam</p>
+                <p>&copy; 2025 AI4Life. Tất cả quyền được bảo lưu.</p>
+
+                <div class="social-icons mt-3">
+                    <a href="#" class="hover:text-blue-400"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-blue-300"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-pink-500"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-red-600"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Global Notification Modal (Pop-up) -->
+    <div id="notification-modal-overlay"
+        class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[2000] opacity-0 invisible transition-opacity duration-300 ease-in-out">
+        <div
+            class="notification-content bg-white p-6 rounded-xl shadow-xl max-w-xs w-11/12 text-center transform -translate-y-5 opacity-0 transition-all duration-300 ease-in-out relative">
+            <button id="notification-close-button"
+                class="absolute top-2 right-2 bg-transparent border-none text-gray-400 text-xl cursor-pointer p-1 rounded-full hover:bg-gray-100 hover:text-gray-700 transition-colors duration-200">&times;</button>
+            <p class="notification-message text-base font-medium mb-4"></p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2001] opacity-0 invisible transition-opacity duration-300 ease-in-out">
+        <div
+            class="settings-modal-content bg-white p-6 rounded-xl shadow-xl max-w-xs w-11/12 text-center transform -translate-y-5 opacity-0 transition-all duration-300 ease-in-out">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Cài đặt</h3>
+            <div class="flex flex-col space-y-3">
+                <button id="edit-profile-button"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    <i class="fas fa-user-edit mr-2"></i>Chỉnh sửa hồ sơ
+                </button>
+                <button id="account-settings-button"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    <i class="fas fa-user-cog mr-2"></i>Cài đặt tài khoản
+                </button>
+                <button id="logout-button"
+                    class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                </button>
+                <button id="cancel-settings-button"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal (for Logout, Reset Chat, etc.) -->
+    <div id="custom-confirm-modal-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2002] opacity-0 invisible transition-opacity duration-300 ease-in-out">
+        <div
+            class="modal-content bg-white p-6 rounded-xl shadow-xl max-w-xs w-11/12 text-center transform -translate-y-5 opacity-0 transition-all duration-300 ease-in-out">
+            <h3 class="text-xl font-bold text-gray-800 mb-4" id="confirm-modal-title"></h3>
+            <p class="text-gray-700 mb-6" id="confirm-modal-message"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-yes-button"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    Có
+                </button>
+                <button id="confirm-no-button"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-full transition duration-300 ease-in-out">
+                    Không
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Main content sections
+            const homeSection = document.getElementById('home-section');
+            const searchSection = document.getElementById('search-section');
+
+            // Main navigation items
+            const homeNavItem = document.getElementById('home-nav-item');
+            const searchNavItem = document.getElementById('search-nav-item');
+            const studymateNavItem = document.getElementById('studymate-nav-item');
+
+            const settingsIcon = document.querySelector('.settings-icon');
+            const themeToggleButton = document.getElementById('theme-toggle-button');
+
+            // Global notification pop-up elements
+            const notificationModalOverlay = document.getElementById('notification-modal-overlay');
+            const notificationContent = notificationModalOverlay.querySelector('.notification-content');
+            const notificationMessage = notificationModalOverlay.querySelector('.notification-message');
+            const notificationCloseButton = notificationModalOverlay.querySelector('#notification-close-button');
+
+            // Custom Confirmation Modal elements
+            const customConfirmModalOverlay = document.getElementById('custom-confirm-modal-overlay');
+            const confirmModalTitle = document.getElementById('confirm-modal-title');
+            const confirmModalMessage = document.getElementById('confirm-modal-message');
+            const confirmYesButton = document.getElementById('confirm-yes-button');
+            const confirmNoButton = document.getElementById('confirm-no-button');
+            let confirmModalResolve; // To resolve the promise when user confirms/cancels
+
+            // Integrated search elements (now in header)
+            const headerSearchInput = document.getElementById('headerSearchInput');
+            const autocompleteSuggestions = document.getElementById('autocomplete-suggestions');
+            const aiSuggestion = document.getElementById('aiSuggestion');
+            const searchResults = document.getElementById('searchResults');
+            
+            // Settings modal elements
+            const settingsModalOverlay = document.getElementById('settings-modal-overlay');
+            const settingsModalContent = settingsModalOverlay.querySelector('.settings-modal-content');
+            const editProfileButton = document.getElementById('edit-profile-button');
+            const accountSettingsButton = document.getElementById('account-settings-button');
+            const logoutButton = document.getElementById('logout-button');
+            const cancelSettingsButton = document.getElementById('cancel-settings-button');
+
+            const htmlElement = document.documentElement;
+
+            // --- Theme Toggling Functionality ---
+            const enableLightTheme = () => {
+                htmlElement.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            };
+
+            const enableDarkTheme = () => {
+                htmlElement.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            };
+
+            const toggleTheme = () => {
+                if (htmlElement.classList.contains('dark-theme')) {
+                    enableLightTheme();
+                } else {
+                    enableDarkTheme();
+                }
+            };
+
+            // --- Global Notification Pop-up Functionality (UN-USED) ---
+            const showNotification = (message, type, duration = 3000) => {};
+            const hideNotification = () => {};
+            const showSuccessNotification = (title, message, duration = 3000) => {};
+            const showErrorNotification = (title, message, duration = 5000) => {};
+            const showWarningNotification = (title, message, duration = 4000) => {};
+            const showInfoNotification = (title, message, duration = 3000) => {};
+
+            // --- Custom Confirmation Modal Functionality ---
+            const showCustomConfirm = (title, message) => {
+                return new Promise(resolve => {
+                    confirmModalTitle.textContent = title;
+                    confirmModalMessage.textContent = message;
+                    customConfirmModalOverlay.classList.add('active');
+                    customConfirmModalOverlay.querySelector('.modal-content').classList.add('active');
+                    confirmModalResolve = resolve;
+
+                    const handleConfirmClick = () => {
+                        customConfirmModalOverlay.querySelector('.modal-content').classList.remove('active');
+                        customConfirmModalOverlay.addEventListener('transitionend', () => {
+                            customConfirmModalOverlay.classList.remove('active');
+                        }, { once: true });
+                        resolve(true);
+                        confirmYesButton.removeEventListener('click', handleConfirmClick);
+                        confirmNoButton.removeEventListener('click', handleCancelClick);
+                    };
+
+                    const handleCancelClick = () => {
+                        customConfirmModalOverlay.querySelector('.modal-content').classList.remove('active');
+                        customConfirmModalOverlay.addEventListener('transitionend', () => {
+                            customConfirmModalOverlay.classList.remove('active');
+                        }, { once: true });
+                        resolve(false);
+                        confirmYesButton.removeEventListener('click', handleConfirmClick);
+                        confirmNoButton.removeEventListener('click', handleCancelClick);
+                    };
+
+                    confirmYesButton.addEventListener('click', handleConfirmClick);
+                    confirmNoButton.addEventListener('click', handleCancelClick);
+                });
+            };
+            
+            // --- Marquee Text Functionality ---
+            const dynamicMarqueeText = document.getElementById('dynamic-marquee-text');
+            const marqueeMessages = [
+                "🎉 Chào mừng bạn đến với AI4Life - Trợ lý học tập cá nhân hóa của bạn! 🎉",
+                "💡 Khám phá các tính năng AI mới nhất để tối ưu hóa hiệu suất học tập! 📚",
+                "✨ Tham gia CUỘC THI AI4LIFE 2025 - Sân chơi sáng tạo cho sinh viên FPT Polytechnic! 🏆",
+                "🔔 Đừng bỏ lỡ các thông báo quan trọng và cập nhật mới nhất từ chúng tôi! 🌐"
+            ];
+            let currentMarqueeMessageIndex = 0;
+            let marqueeTextInterval;
+
+            const displayNextMarqueeMessage = () => {
+                dynamicMarqueeText.textContent = marqueeMessages[currentMarqueeMessageIndex];
+                currentMarqueeMessageIndex = (currentMarqueeMessageIndex + 1) % marqueeMessages.length;
+            };
+
+            const startMarquee = () => {
+                clearInterval(marqueeTextInterval);
+                displayNextMarqueeMessage();
+                marqueeTextInterval = setInterval(displayNextMarqueeMessage, 8000);
+            };
+
+            // --- Section Management ---
+            const showSection = (sectionToShow) => {
+                homeSection.classList.add('hidden');
+                searchSection.classList.add('hidden');
+
+                document.querySelectorAll('.main-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                if (sectionToShow !== 'home') {
+                    clearInterval(marqueeTextInterval);
+                    stopSlideshow();
+                }
+
+                if (sectionToShow === 'home') {
+                    homeSection.classList.remove('hidden');
+                    homeNavItem.classList.add('active');
+                    homeSection.scrollTop = 0;
+                    startSlideshow();
+                    startMarquee();
+                } else if (sectionToShow === 'search') {
+                    searchSection.classList.remove('hidden');
+                    searchNavItem.classList.add('active');
+                    headerSearchInput.value = '';
+                    performSearch(headerSearchInput.value);
+                    headerSearchInput.focus();
+                    searchSection.scrollTop = 0;
+                }
+            };
+
+            // --- Slideshow Functionality ---
+            let slideIndex = 1;
+            let slideshowTimer;
+
+            function showSlides(n) {
+                let i;
+                let slides = document.getElementsByClassName("my-slides");
+                let dots = document.getElementsByClassName("dot");
+                if (n > slides.length) { slideIndex = 1 }
+                if (n < 1) { slideIndex = slides.length }
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" active", "");
+                }
+                slides[slideIndex - 1].style.display = "block";
+                dots[slideIndex - 1].className += " active";
+            }
+
+            function autoAdvanceSlides() {
+                plusSlides(1);
+                slideshowTimer = setTimeout(autoAdvanceSlides, 5000);
+            }
+
+            function startSlideshow() {
+                stopSlideshow();
+                showSlides(slideIndex);
+                slideshowTimer = setTimeout(autoAdvanceSlides, 5000);
+            }
+
+            function stopSlideshow() {
+                clearTimeout(slideshowTimer);
+            }
+
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function currentSlide(n) {
+                showSlides(slideIndex = n);
+                stopSlideshow();
+                slideshowTimer = setTimeout(autoAdvanceSlides, 5000);
+            }
+
+
+            // --- Integrated Search and Autocomplete Functionality ---
+            const allFunctions = [
+                { name: "AI Phân Tích Kỹ Năng", description: "Xác định điểm mạnh, yếu, gợi ý lộ trình học tập cá nhân hóa.", link: "skill_analysis.html" },
+                { name: "AI4Life", description: "Trợ lý học tập thông minh mọi lúc, mọi nơi.", link: "studymate.html" }
+            ];
+
+            const renderSearchResults = (results, queryEmpty) => {
+                searchResults.innerHTML = '';
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<p class="text-center text-gray-500 py-4">Không tìm thấy chức năng phù hợp với từ khóa này.</p>';
+                    aiSuggestion.textContent = `Bạn có thể thử tìm kiếm các từ khóa khác hoặc xóa ô tìm kiếm để xem tất cả chức năng.`;
+                    return;
+                }
+                results.forEach(func => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `
+                        <h3 class="font-bold">${func.name}</h3>
+                        <p>${func.description}</p>
+                    `;
+                    div.addEventListener('click', () => {
+                        window.open(func.link, '_self');
+                    });
+                    searchResults.appendChild(div);
+                });
+                if (queryEmpty) {
+                    aiSuggestion.textContent = 'Bạn có thể nhập từ khóa để tìm kiếm các chức năng.';
+                } else {
+                    aiSuggestion.textContent = '';
+                }
+            };
+
+            const showSuggestions = (query) => {
+                autocompleteSuggestions.innerHTML = '';
+                if (query.length === 0) {
+                    autocompleteSuggestions.style.display = 'none';
+                    return;
+                }
+
+                const lowerCaseQuery = query.toLowerCase();
+                const filteredSuggestions = allFunctions.filter(func =>
+                    func.name.toLowerCase().includes(lowerCaseQuery)
+                );
+
+                if (filteredSuggestions.length > 0) {
+                    filteredSuggestions.forEach(func => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = func.name;
+                        div.addEventListener('click', () => {
+                            headerSearchInput.value = func.name;
+                            autocompleteSuggestions.style.display = 'none';
+                            window.open(func.link, '_self');
+                        });
+                        autocompleteSuggestions.appendChild(div);
+                    });
+                    autocompleteSuggestions.style.display = 'block';
+                } else {
+                    autocompleteSuggestions.style.display = 'none';
+                }
+            };
+
+            const performSearch = (query, event) => {
+                const lowerCaseQuery = query.toLowerCase();
+                const queryEmpty = (lowerCaseQuery === '');
+
+                if (event && event.type === 'keydown' && event.key === 'Enter' && !queryEmpty) {
+                    const exactMatch = allFunctions.find(func => func.name.toLowerCase() === lowerCaseQuery);
+                    if (exactMatch) {
+                        window.open(exactMatch.link, '_self');
+                        return null;
+                    }
+                    const filteredForEnter = allFunctions.filter(func =>
+                        func.name.toLowerCase().includes(lowerCaseQuery) ||
+                        func.description.toLowerCase().includes(lowerCaseQuery)
+                    );
+                    if (filteredForEnter.length > 0) {
+                        window.open(filteredForEnter[0].link, '_self');
+                        return null;
+                    }
+                }
+
+                const filteredResults = allFunctions.filter(func =>
+                    func.name.toLowerCase().includes(lowerCaseQuery) ||
+                    func.description.toLowerCase().includes(lowerCaseQuery)
+                );
+
+                searchResults.innerHTML = '';
+
+                if (queryEmpty) {
+                    renderSearchResults(allFunctions, true);
+                } else if (filteredResults.length > 0) {
+                    renderSearchResults(filteredResults, false);
+                } else {
+                    searchResults.innerHTML = '<p class="text-center text-gray-500 py-4">Không tìm thấy chức năng phù hợp với từ khóa này.</p>';
+                    aiSuggestion.textContent = `Bạn có thể thử tìm kiếm các từ khóa khác hoặc xóa ô tìm kiếm để xem tất cả chức năng.`;
+                }
+                return filteredResults;
+            };
+
+            headerSearchInput.addEventListener('input', () => {
+                const query = headerSearchInput.value;
+                showSuggestions(query);
+
+                if (homeSection.classList.contains('hidden')) {
+                     performSearch(query, null);
+                } else {
+                    showSection('search');
+                    performSearch(query, null);
+                }
+            });
+
+            headerSearchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    const query = headerSearchInput.value;
+                    const resultOfPerformSearch = performSearch(query, event);
+
+                    if (resultOfPerformSearch !== null && resultOfPerformSearch.length > 0) {
+                    }
+                    event.preventDefault();
+                    autocompleteSuggestions.style.display = 'none';
+                }
+            });
+
+            headerSearchInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    autocompleteSuggestions.style.display = 'none';
+                }, 100);
+            });
+
+            headerSearchInput.addEventListener('focus', () => {
+                if (headerSearchInput.value.length > 0) {
+                    showSuggestions(headerSearchInput.value);
+                }
+            });
+
+            searchNavItem.addEventListener('click', (event) => {
+                event.preventDefault();
+                showSection('search');
+                headerSearchInput.value = '';
+                performSearch('');
+                headerSearchInput.focus();
+                autocompleteSuggestions.style.display = 'none';
+            });
+            
+            // --- Main Navigation Event Listeners ---
+            homeNavItem.addEventListener('click', () => {
+                showSection('home');
+            });
+
+            studymateNavItem.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.open('studymate.html', '_self');
+            });
+
+            // The notification navigation item is no longer in the HTML.
+            // The logic for it has been removed from the JS as well.
+            
+            // The profile navigation item is no longer in the HTML.
+            // The logic for it has been removed from the JS as well.
+            
+
+            // --- Settings Icon & Modals ---
+            settingsIcon.addEventListener('click', () => {
+                settingsModalOverlay.classList.add('active');
+                settingsModalContent.classList.add('active');
+            });
+
+            editProfileButton.addEventListener('click', () => {
+                settingsModalContent.classList.remove('active');
+                settingsModalOverlay.classList.remove('active');
+            });
+
+            accountSettingsButton.addEventListener('click', () => {
+                settingsModalContent.classList.remove('active');
+                settingsModalOverlay.addEventListener('transitionend', () => {
+                    settingsModalOverlay.classList.remove('active');
+                    window.open('hoso.html', '_self');
+                }, { once: true });
+            });
+
+            logoutButton.addEventListener('click', async () => {
+                settingsModalContent.classList.remove('active');
+                settingsModalOverlay.classList.remove('active');
+
+                const confirmed = await showCustomConfirm("Xác nhận đăng xuất", "Bạn có chắc chắn muốn đăng xuất khỏi AI4LIFE?");
+                if (confirmed) {
+                    setTimeout(() => {
+                        window.open('dangnhap.html', '_self');
+                    }, 2000);
+                }
+            });
+
+            cancelSettingsButton.addEventListener('click', () => {
+                settingsModalContent.classList.remove('active');
+                settingsModalOverlay.addEventListener('transitionend', () => {
+                    settingsModalOverlay.classList.remove('active');
+                }, { once: true });
+            });
+
+            // --- Theme Toggle Button Event Listener ---
+            themeToggleButton.addEventListener('click', toggleTheme);
+
+            // --- Initial Setup ---
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                enableDarkTheme();
+            } else {
+                enableLightTheme();
+            }
+            
+            // Initial display: show home section and start slideshow
+            showSection('home');
+            startMarquee();
+        });
+    </script>
+</body>
+
+</html>
